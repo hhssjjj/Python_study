@@ -164,24 +164,154 @@ def Adder(x, y):
     return  add
 
 print('add = ', Adder(10,20))
-
 # 축약형
 print('add = ', (lambda x , y : x+y )(10,20) ) # add = 30
 print('add = ', (lambda x , y : x*y )(10,20) ) # add = 200
+
+
+# lambda에서 가변 인수 사용
+calc = lambda dan, su : dan * su
+print('print = ', calc(2500,5))
+
+calc2 = lambda dan , *su , **product : print(dan, su, product) #*su는 튜플형, **product는 딕셔너리 인데 이런 가변함수는 다른언어는 없고 파이썬에만 있음.
+calc2(1000 , 3 , 5 , a=2500, b=3000)
+
+
 
 # 몸체는 pass 하고 나중에 코딩 가능
 def divide(x,y):
     pass
 
-#디폴트 값 정하지 않음
+#디폴트 인수 정하지 않음
 def sayhello(name , msg):
     print("안녕",name + ',' + msg)
 
 sayhello('한솔', '반가워!')  # 안녕 한솔,반가워
 
-#디폴트 값 정함
+#디폴트 인수 정함
 def sayhello(name, msg='반갑습니당.'): # msg 는 디폴트함수가 된다.
     print("안녕", name + ',' + msg)
 
 
 sayhello('한솔') # 안녕 한솔,반갑습니당.
+
+# 3. scope : 전역변수 / 지역변수
+# 전역변수 : 전 지역 사용
+# 지역변수 : 함수 or 블럭 (if, while, for) 사용
+
+y = 1
+def local_func(x):
+    x += 50
+    return x
+
+print(local_func(1))
+
+
+y = 0
+def local_func():
+    global y  # 전역변수
+    y += 50
+
+print('y:', y)
+local_func()
+print('y:', y)
+local_func()
+print('y:', y)
+
+
+data = [1, 3, 5, 7, 9]
+tot = 0 #전역변수
+
+def calc_func(data):
+    global tot
+    tot += sum(data)
+    return tot
+
+print(tot)
+calc_func(data)
+print(tot)
+calc_func(data)
+print(tot)
+
+
+'''
+4. 중첩함수
+'''
+# 내부함수를 외부함수 내에서 호출
+
+# 중첩함수 1
+def outerFunc(txt):
+    def innerFunc():
+        print(txt+"me-long")
+
+    innerFunc()
+
+outerFunc("캬캬")
+
+# 중첩함수 2
+# 외부함수 리턴값으로 내부함수 지정
+def a():
+    print('a함수')
+    def b():
+        print('b함수')
+    return b #일급함수
+
+z = a()
+z() #일급함수
+
+# 중첩함수 3
+data = list(range(1,101))
+
+def calc_data(data):
+    #합계 inner 함수
+    def tot():
+        tot_val = sum(data)
+        return tot_val
+
+    # 평균 inner 함수
+    def avg(tot_val):
+        avg_val = tot_val/ len(data)
+        return avg_val
+    return tot , avg
+
+total, avgrage = calc_data(data) #일급함수
+tot_val = total()
+print('total', tot_val)
+
+avg_val = avgrage(tot_val)
+print('avg_val',avg_val)
+
+# 중첩함수 4
+def A():
+    x = 10
+    def B():
+        x = 20 # 또다른 x 값을 선언한것라 그대로 10임.
+    B()
+    print(x)
+
+A()
+
+# 중첩함수 4-1 (nonlocal 사용하기, 논로컬은 현재 함수의 바깥쪽에 있는 지역변수를 찾을 때 사용하며 가장 가까운 함수부터 먼저 찾음)
+def A():
+    x = 10
+    def B():
+        nonlocal x # 내부에 있는 변수는 아니다, 즉 현재함수 바깥쪽 함수의 변수를 의미해서 20이 됨. (중첩함수 내에서만 사용)
+        x = 20
+    B()
+    print(x)
+
+A()
+
+#래퍼함수 (감싸는 함수)
+def wrap(func):
+    def decorated():
+        print("hi")
+        func() # 중첩함수 내부에 끼어있는 얘가 래퍼함수
+        print('bye')
+    return decorated()
+
+@wrap
+def hello():
+    print('감동란')
+
+hello()
